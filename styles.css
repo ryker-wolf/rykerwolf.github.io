@@ -294,6 +294,8 @@ nav {
     scale(1);
 }
 
+.stat-left { }
+
 .stat-shine {
     position: absolute;
     top: 0;
@@ -379,6 +381,27 @@ nav {
     font-weight: 600;
     margin-bottom: 1rem;
     color: #373737;
+}
+
+/* Desktop: Show all content by default */
+.skill-card-header {
+    display: block;
+}
+
+.skill-card-arrow {
+    display: none;
+}
+
+.project-card-header {
+    display: block;
+}
+
+.project-card-arrow {
+    display: none;
+}
+
+.project-content {
+    display: block;
 }
 
 .skill-card p {
@@ -577,6 +600,12 @@ nav {
     background: #dc2626;
     color: white;
     transform: translateY(-2px);
+}
+
+.project-content-images {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 /* Lightbox Modal */
@@ -781,6 +810,8 @@ footer {
     transform: translateY(-3px);
 }
 
+.project-card-title-v {}
+
 /* Animations */
 @keyframes slideUp {
     from {
@@ -894,6 +925,7 @@ footer {
 
     .hero {
         position: relative;
+        padding-top: 80px;
     }
 
     .hero::after {
@@ -948,12 +980,143 @@ footer {
         grid-template-columns: 1fr 1fr;
     }
 
+    .stat-left {
+        transform:
+        perspective(800px)
+        rotateY(15deg)
+        rotateX(10deg)
+        scale(1);
+    }    
+
     .skills-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
+    }
+
+    .skill-card {
+        padding: 1rem;
+        cursor: pointer;
+    }
+
+    .skill-icon {
+        font-size: 2rem;
+        color: #dc2626;
+        margin-bottom: 0;
+    }
+
+    .skill-card-arrow {
+        display: flex;
+        justify-content: center;
+        font-size: 1rem;
+        color: #242424;
+        transition: transform 0.3s ease;
+        transform-origin: 35% 0%;
+    }
+
+    .skill-card.expanded .skill-card-arrow {
+        transform: rotate(90deg) translateY(-10px);
+        transform-origin: 35% 0%;
+    }
+    
+    .skill-card h4 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0;
+        text-align: center;
+        color: #373737;
+    }
+
+    .skill-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0;
+    }
+
+    .skill-card-title {
+        display: grid;
+        grid-template-columns: 1fr 5fr 1fr;
+        align-items: center;
+        gap: 1rem;
+        flex: 1;
+    }
+
+    .skill-card p {
+        display: none;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .skill-card.expanded p {
+        display: block;
     }
 
     .projects-grid {
         grid-template-columns: 1fr;
+    }
+
+    .project-card {
+        padding: 1rem;
+        cursor: pointer;
+    }
+
+    .project-icon {
+        font-size: 2rem;
+        color: #dc2626;
+        margin-bottom: 0;
+    }
+
+    .project-card-title-v {
+        display: grid;
+        grid-template-columns: 1fr;
+        text-align: left;
+    }
+
+    .project-card-arrow {
+        display: flex;
+        justify-content: center;
+        font-size: 1rem;
+        color: #242424;
+        transition: transform 0.3s ease;
+        transform-origin: 35% 0%;
+    }
+
+    .project-card.expanded .project-card-arrow {
+        transform: rotate(90deg) translateY(-10px);
+        transform-origin: 35% 0%;
+    }
+    
+    .project-card h3 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #272727;
+    }
+
+    .project-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0;
+    }
+
+    .project-card-title {
+        display: grid;
+        grid-template-columns: 5fr 1fr;
+        align-items: center;
+        gap: 1rem;
+        flex: 1;
+    }
+
+    .project-content {
+        display: none;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .project-card.expanded .project-content {
+        display: block;
     }
 
     .project-header {

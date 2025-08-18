@@ -151,3 +151,19 @@ function toggleCodeSnippet(header) {
         codeSnippet.classList.remove('expanded');
     }
 }
+
+// Mobile skill card toggle functionality
+function toggleSkillCard(card) {
+    // Only work on mobile devices
+    if (window.innerWidth <= 768) {
+        card.classList.toggle('expanded');
+    }
+}
+
+// Mobile project card toggle functionality
+function toggleProjectCard(card) {
+    // Only work on mobile devices
+    if (window.innerWidth <= 768) {
+        card.classList.toggle('expanded');
+    }
+}

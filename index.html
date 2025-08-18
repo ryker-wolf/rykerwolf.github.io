@@ -67,7 +67,7 @@
                     </p>
                 </div>
                 <div class="stats">
-                    <div class="stat stat-special">
+                    <div class="stat stat-left stat-special">
                         <span class="stat-number special">8+</span>
                         <span class="stat-label special">Years in Software & Engineering</span>
                         <div class="stat-shine"></div>
@@ -76,8 +76,8 @@
                         <span class="stat-number">30+</span>
                         <span class="stat-label">Software & Automotive Projects</span>
                     </div>
-                    <div class="stat">
-                        <span class="stat-number">5+</span>
+                    <div class="stat stat-left">
+                        <span class="stat-number">5</span>
                         <span class="stat-label">Published Security Research Papers</span>
                     </div>
                 </div>
@@ -89,33 +89,61 @@
         <div class="container">
             <h2 class="section-title">My Skills</h2>
             <div class="skills-grid">
-                <div class="skill-card">
-                    <div class="skill-icon">
-                        <i class="fas fa-code"></i>
+                <div class="skill-card" onclick="toggleSkillCard(this)">
+                    <div class="skill-card-header">
+                        <div class="skill-card-title">
+                            <div class="skill-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <h4>Software Development</h4>
+                            <div class="skill-card-arrow">
+                                <i class="fas fa-chevron-down skill-card-arrow"></i>
+                            </div>
+                        </div>
                     </div>
-                    <h4>Software Development</h4>
                     <p>A decade of experience with different programming languages including C++/C, 
                       C#, Java, Assembly, HTML/CSS, PHP, Node.js, and more</p>
                 </div>
-                <div class="skill-card">
-                    <div class="skill-icon">
-                        <i class="fas fa-microchip"></i>
+                <div class="skill-card" onclick="toggleSkillCard(this)">
+                    <div class="skill-card-header">
+                        <div class="skill-card-title">
+                            <div class="skill-icon">
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <h4>Embedded & Automotive Systems</h4>
+                            <div class="skill-card-arrow">
+                                <i class="fas fa-chevron-down skill-card-arrow"></i>
+                            </div>
+                        </div>
                     </div>
-                    <h4>Embedded & Automotive Systems</h4>
                     <p>Designing PCBs, integrating CANBUS networks, and developing ECU solutions for aftermarket automotive manufacturers.</p>
                 </div>
-                <div class="skill-card">
-                    <div class="skill-icon">
-                        <i class="fas fa-shield-alt"></i>
+                <div class="skill-card" onclick="toggleSkillCard(this)">
+                    <div class="skill-card-header">
+                        <div class="skill-card-title">
+                            <div class="skill-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h4>Reverse Engineering & Security</h4>
+                            <div class="skill-card-arrow">
+                                <i class="fas fa-chevron-down skill-card-arrow"></i>
+                            </div>
+                        </div>
                     </div>
-                    <h4>Reverse Engineering & Security</h4>
                     <p>Expertise in analyzing software and systems to identify vulnerabilities and create secure, optimized solutions.</p>
                 </div>
-                <div class="skill-card">
-                    <div class="skill-icon">
-                        <i class="fas fa-users"></i>
+                <div class="skill-card" onclick="toggleSkillCard(this)">
+                    <div class="skill-card-header">
+                        <div class="skill-card-title">
+                            <div class="skill-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h4>Leadership & Collaboration</h4>
+                            <div class="skill-card-arrow">
+                                <i class="fas fa-chevron-down skill-card-arrow"></i>
+                            </div>
+                        </div>
                     </div>
-                    <h4>Leadership & Collaboration</h4>
                     <p>Proven ability to lead teams, coordinate complex projects, and turn technical strategies into actionable results.</p>
                 </div>
             </div>
@@ -126,15 +154,23 @@
         <div class="container">
             <h2 class="section-title">Featured Projects</h2>
             <div class="projects-grid">
-                <div class="project-card">
-                    <div class="project-header">
-                        <h3>reCAN - Automotive CANBUS Analyzer</h3>
-                        <div class="project-tags">
-                            <span class="tag">C++</span>
-                            <span class="tag">CAN Bus</span>
-                            <span class="tag">Automotive</span>
+                <div class="project-card" onclick="toggleProjectCard(this)">
+                    <div class="project-card-header">
+                        <div class="project-card-title">
+                            <div class="project-card-title-v">
+                                <h3>reCAN - Automotive CANBUS Analyzer</h3>
+                                <div class="project-tags">
+                                    <span class="tag">C++</span>
+                                    <span class="tag">CAN Bus</span>
+                                    <span class="tag">Automotive</span>
+                                </div>
+                            </div>
+                            <div class="project-card-arrow">
+                                <i class="fas fa-chevron-down project-card-arrow"></i>
+                            </div>
                         </div>
                     </div>
+                    <div class="project-content">
                     <img src="imgs/reCAN.png" alt="Automotive CANBUS Decoder/Explorer" onclick="openLightbox(this)">
                     <p class="project-description">
                         Diagnostic tool for automotive CANBUS monitoring and analysis,
@@ -143,20 +179,29 @@
                         Modern graphical interface made with my own rendering framework based on D3D paired with my own GUI framework.
                         Made to reverse engineer automotive ECUs and develop custom solutions for aftermarket automotive manufacturers.
                     </p>
-                    <div class="project-links">
-                        <a href="#" class="project-link">View Details</a>
+                        <div class="project-links">
+                            <a href="#" class="project-link">View Details</a>
+                        </div>
                     </div>
                 </div>
 
-                <div class="project-card">
-                    <div class="project-header">
-                        <h3>Reverse Engineering of Rust's encryption routines</h3>
-                        <div class="project-tags">
-                            <span class="tag">RE</span>
-                            <span class="tag">Assembly</span>
-                            <span class="tag">Security</span>
+                <div class="project-card" onclick="toggleProjectCard(this)">
+                    <div class="project-card-header">
+                        <div class="project-card-title">
+                            <div class="project-card-title-v">
+                                <h3>Reverse Engineering Rust's encryption</h3>
+                                <div class="project-tags">
+                                    <span class="tag">RE</span>
+                                    <span class="tag">Assembly</span>
+                                    <span class="tag">Security</span>
+                                </div>
+                            </div>
+                            <div class="project-card-arrow">
+                                <i class="fas fa-chevron-down project-card-arrow"></i>
+                            </div>
                         </div>
                     </div>
+                    <div class="project-content">
                     <img src="imgs/rustReverse.png" alt="Reverse Engineering of Rust's encryption routines" onclick="openLightbox(this)">
                     <div class="code-snippet">
                         <div class="code-header" onclick="toggleCodeSnippet(this)">
@@ -193,8 +238,42 @@
                         This was a fun, quick project that allowed me to learn more about encryption and test what I know.
                         I was able to trace the encryption routine and learn how it works using IDA Pro, enabling me to un-encrypt protected data within the game.
                     </p>
-                    <div class="project-links">
-                        <a href="#" class="project-link">View Details</a>
+                        <div class="project-links">
+                            <a href="#" class="project-link">View Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card" onclick="toggleProjectCard(this)">
+                    <div class="project-card-header">
+                        <div class="project-card-title">
+                            <div class="project-card-title-v">
+                                <h3>Wolf Racing Datalog Analyzer</h3>
+                                <div class="project-tags">
+                                    <span class="tag">iOS</span>
+                                    <span class="tag">Swift</span>
+                                    <span class="tag">Automotive</span>
+                                </div>
+                            </div>
+                            <div class="project-card-arrow">
+                                <i class="fas fa-chevron-down project-card-arrow"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                    <div class="project-content-images">
+                        <img src="imgs/wolfracing_1.jpg" style="width: 50%;"alt="Wolf Racing Datalog Analyzer" onclick="openLightbox(this)">
+                        <img src="imgs/wolfracing_2.jpg" style="width: 50%;"alt="Wolf Racing Datalog Analyzer" onclick="openLightbox(this)">
+                    </div>
+                    <p class="project-description">
+                        iOS application programmed in Swift to parse and interpret 
+                        Haltech ECU datalogs. Optimized for speed and usability, 
+                        the app transforms complex raw data into actionable insights, 
+                        allowing users to improve vehicle performance and efficiency.
+                    </p>
+                        <div class="project-links">
+                            <a href="#" class="project-link">View Details</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -240,7 +319,7 @@
                     </div>
                     <div class="form-group">
                         <label for="message">Message</label>
-                        <textarea id="message" name="message" placeholder="Tell me about your project..." required></textarea>
+                        <textarea id="message" name="message" placeholder="What's up?" required></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
                 </form>
