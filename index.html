@@ -1,9 +1,177 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Ryker Wolf</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ryker Wolf</title>
+    <meta name="description" content="Portfolio of Ryker Wolf - Software Developer specializing in modern web applications">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">ryker_wolf( )</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="mobile-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Hello, I'm Ryker Wolf</h1>
+            <p class="subtitle">Software Developer & Engineer</p>
+            <p class="description">
+              I design and develop software and hardware solutions that drive innovation in tech and automotive industries. My work turns complex ideas into practical, high-performance tools.
+            </p>
+            <div class="cta-buttons">
+                <a href="#contact" class="btn btn-primary">Get In Touch</a>
+                <a href="#about" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">About Me</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Passionate Creator</h3>
+                    <p>
+                      I’m a software developer and engineer with a decade of experience in C++, C#, Java, embedded systems, and more. 
+                      I’ve led teams, developed cutting-edge tools for automotive applications, and published research in the reverse engineering and cybersecurity space. 
+                      I thrive on solving complex problems and turning ideas into practical, high-performance solutions.
+                    </p>
+                </div>
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-number">10+</span>
+                        <span class="stat-label">Years in Software & Engineering</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">30+</span>
+                        <span class="stat-label">Software & Automotive Projects</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">5+</span>
+                        <span class="stat-label">Published Security Research Papers</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="skills">
+        <div class="container">
+            <h2 class="section-title">My Skills</h2>
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <div class="skill-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h4>Software Development</h4>
+                    <p>A decade of experience with different programming languages including C++/C, 
+                      C#, Java, Assembly, HTML/CSS, PHP, Node.js, and more</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-icon">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <h4>Embedded & Automotive Systems</h4>
+                    <p>Designing PCBs, integrating CANBUS networks, and developing ECU solutions for aftermarket automotive manufacturers.</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>Reverse Engineering & Security</h4>
+                    <p>Expertise in analyzing software and systems to identify vulnerabilities and create secure, optimized solutions.</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4>Leadership & Collaboration</h4>
+                    <p>Proven ability to lead teams, coordinate complex projects, and turn technical strategies into actionable results.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title" style="color: #ffffff;">Let's Work Together</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Get In Touch</h3>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>ryker@rykerwolf.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Bradenton, FL <small style="color: #94a3b8;">(Available for Remote Work)</small></span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Active Monday - Friday, 6AM - 9PM</span>
+                    </div>
+                    <p style="margin-top: 2rem; color: #94a3b8;">
+                        I'm always interested in new opportunities and exciting projects. 
+                        Whether you have a question or just want to say hi, I'll do my best to get back to you!
+                    </p>
+                </div>
+                <form class="contact-form" action="https://formspree.io/f/xeozwlra" method="POST">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" placeholder="Your Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" placeholder="Tell me about your project..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="social-links">
+                <a href="mailto:ryker@rykerwolf.com">
+                    <i class="fas fa-envelope"></i>
+                </a>
+            </div>
+            <p>&copy; 2025 Ryker Wolf. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
 </body>
 </html>
