@@ -4,17 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ryker Wolf</title>
-    <meta name="description" content="Portfolio of Ryker Wolf - Software Developer specializing in modern web applications">
+    <meta name="description" content="Portfolio of Ryker Wolf - Software Developer">
     
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- Custom Styles -->
+    <link href="code-style.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Header -->
     <header>
         <nav>
             <div class="logo">ryker_wolf( )</div>
@@ -22,6 +19,7 @@
                 <li><a href="#home">Home</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
             <div class="mobile-menu">
@@ -32,22 +30,30 @@
         </nav>
     </header>
 
-    <!-- Hero Section -->
     <section id="home" class="hero">
-        <div class="hero-content">
-            <h1>Hello, I'm Ryker Wolf</h1>
-            <p class="subtitle">Software Developer & Engineer</p>
-            <p class="description">
-              I design and develop software and hardware solutions that drive innovation in tech and automotive industries. My work turns complex ideas into practical, high-performance tools.
-            </p>
-            <div class="cta-buttons">
-                <a href="#contact" class="btn btn-primary">Get In Touch</a>
-                <a href="#about" class="btn btn-secondary">Learn More</a>
-            </div>
+        <div class="hero-background">
+            <div class="hero-gradient">
+                <div class="hero-content">
+                    <div class="hero-image-container">
+                        <img src="imgs/headshot.jpg" alt="Ryker Wolf" class="hero-image">
+                    </div>
+                    <div class="hero-text">
+                        <h1>Hi, I'm Ryker Wolf</h1>
+                        <p class="subtitle">Software Developer & Engineer</p>
+                        <p class="description">
+                          I design and develop software and hardware solutions that drive innovation in tech and automotive industries. My work turns complex ideas into practical, high-performance tools.
+                        </p>
+                        <div class="cta-buttons">
+                            <a href="#contact" class="btn btn-primary">Get In Touch</a>
+                            <a href="#about" class="btn btn-secondary">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+                    </div>
+            <div class="hero-image-bg"></div>
         </div>
     </section>
 
-    <!-- About Section -->
     <section id="about" class="about">
         <div class="container">
             <h2 class="section-title">About Me</h2>
@@ -55,15 +61,16 @@
                 <div class="about-text">
                     <h3>Passionate Creator</h3>
                     <p>
-                      I’m a software developer and engineer with a decade of experience in C++, C#, Java, embedded systems, and more. 
-                      I’ve led teams, developed cutting-edge tools for automotive applications, and published research in the reverse engineering and cybersecurity space. 
+                      I'm a software developer and engineer with a decade of experience in C++, C#, Java, embedded systems, and more. 
+                      I've led teams, developed cutting-edge tools for automotive applications, and published research in the reverse engineering and cybersecurity space. 
                       I thrive on solving complex problems and turning ideas into practical, high-performance solutions.
                     </p>
                 </div>
                 <div class="stats">
-                    <div class="stat">
-                        <span class="stat-number">8+</span>
-                        <span class="stat-label">Years in Software & Engineering</span>
+                    <div class="stat stat-special">
+                        <span class="stat-number special">8+</span>
+                        <span class="stat-label special">Years in Software & Engineering</span>
+                        <div class="stat-shine"></div>
                     </div>
                     <div class="stat">
                         <span class="stat-number">30+</span>
@@ -78,7 +85,6 @@
         </div>
     </section>
 
-    <!-- Skills Section -->
     <section id="skills" class="skills">
         <div class="container">
             <h2 class="section-title">My Skills</h2>
@@ -116,26 +122,109 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <h2 class="section-title">Featured Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-header">
+                        <h3>reCAN - Automotive CANBUS Analyzer</h3>
+                        <div class="project-tags">
+                            <span class="tag">C++</span>
+                            <span class="tag">CAN Bus</span>
+                            <span class="tag">Automotive</span>
+                        </div>
+                    </div>
+                    <img src="imgs/reCAN.png" alt="Automotive CANBUS Decoder/Explorer" onclick="openLightbox(this)">
+                    <p class="project-description">
+                        Diagnostic tool for automotive CANBUS monitoring and analysis,
+                        enabling real-time monitoring and configuration of engine/vehicle parameters via CANBUS communication.
+                        Built from scratch using C++ and my own libraries.
+                        Modern graphical interface made with my own rendering framework based on D3D paired with my own GUI framework.
+                        Made to reverse engineer automotive ECUs and develop custom solutions for aftermarket automotive manufacturers.
+                    </p>
+                    <div class="project-links">
+                        <a href="#" class="project-link">View Details</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">
+                        <h3>Reverse Engineering of Rust's encryption routines</h3>
+                        <div class="project-tags">
+                            <span class="tag">RE</span>
+                            <span class="tag">Assembly</span>
+                            <span class="tag">Security</span>
+                        </div>
+                    </div>
+                    <img src="imgs/rustReverse.png" alt="Reverse Engineering of Rust's encryption routines" onclick="openLightbox(this)">
+                    <div class="code-snippet">
+                        <div class="code-header" onclick="toggleCodeSnippet(this)">
+                            <span class="code-lang">C++</span>
+                            <span class="code-toggle">rebuiltDecryptionRoutine( ) <i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="code-content" style="display: none;">
+                            <pre><code class="language-cpp">uint64_t rebuiltDecryptionRoutine( uint64_t* encrypted )
+{
+    uint64_t* v1;
+    int v2;
+    int v3;
+    unsigned int v4;
+    uint64_t v6;
+
+    v1 = &v6;
+    v3 = 3;
+    v6 = *encrypted;
+    do
+    {
+        v3 = *( uint32_t* )v1;
+        v4 = *( ( unsigned int8_t* )v1 + 3 );
+        v1 = ( uint64_t* )( ( char* )v1 + 4 );
+        *( ( uint32_t* )v1 - 1 ) = ( ( ( ( ( v3 << 8 ) | v4 ) + 0x23792E8B ) << 26 ) | ( ( ( ( v3 << 8 ) | v4 ) + 0x23792E8B ) >> 6 ) ) - 0x1FE1805;
+        --v2;
+    } while ( v2 );
+   
+    return v6;
+}</code></pre>
+                        </div>
+                    </div>
+                    <p class="project-description">
+                        Reverse engineering of Rust's encryption routines to understand how it works and how to break it.
+                        This was a fun, quick project that allowed me to learn more about encryption and test what I know.
+                        I was able to trace the encryption routine and learn how it works using IDA Pro, enabling me to un-encrypt protected data within the game.
+                    </p>
+                    <div class="project-links">
+                        <a href="#" class="project-link">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section id="contact" class="contact">
         <div class="container">
             <h2 class="section-title" style="color: #ffffff;">Let's Work Together</h2>
             <div class="contact-content">
                 <div class="contact-info">
-                    <h3>Get In Touch</h3>
+                    <div class="contact-info-header">
+                        <h3>Get In Touch</h3>
+                        <div class="profile-image-container">
+                            <img src="imgs/headshot.jpg" alt="Ryker Wolf" class="profile-image">
+                        </div>
+                    </div>
                     <div class="contact-item">
                         <i class="fas fa-envelope"></i>
                         <span>ryker@rykerwolf.com</span>
                     </div>
                     <div class="contact-item">
                         <i class="fas fa-map-marker-alt"></i>
-                        <span>Bradenton, FL <small style="color: #94a3b8;">(Available for Remote Work)</small></span>
+                        <span>Bradenton, FL <small style="color: #b89494;">(Available for Remote Work)</small></span>
                     </div>
                     <div class="contact-item">
                         <i class="fas fa-clock"></i>
                         <span>Active Monday - Friday, 6AM - 9PM</span>
                     </div>
-                    <p style="margin-top: 2rem; color: #94a3b8;">
+                    <p style="margin-top: 2rem; color: #b89494;">
                         I'm always interested in new opportunities and exciting projects. 
                         Whether you have a question or just want to say hi, I'll do my best to get back to you!
                     </p>
@@ -171,6 +260,18 @@
         </div>
     </footer>
 
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <span class="lightbox-close">&times;</span>
+        <img id="lightbox-img" class="lightbox-content" onclick="event.stopPropagation()">
+        <div class="lightbox-caption"></div>
+    </div>
+
+    <!-- Syntax Highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+    
     <!-- Custom JavaScript -->
     <script src="script.js"></script>
 </body>

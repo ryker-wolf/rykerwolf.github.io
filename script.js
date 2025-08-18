@@ -68,3 +68,86 @@ document.querySelectorAll('.skill-card').forEach(card => {
     card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
     observer.observe(card);
 });
+
+// Observe project cards for animation
+document.querySelectorAll('.project-card').forEach(card => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(30px)';
+    card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(card);
+});
+
+// Copy code functionality
+function copyCode(button) {
+    const codeBlock = button.closest('.code-snippet').querySelector('code');
+    const text = codeBlock.textContent;
+    
+    navigator.clipboard.writeText(text).then(function() {
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.style.background = '#10b981';
+        
+        setTimeout(function() {
+            button.textContent = originalText;
+            button.style.background = '#475569';
+        }, 2000);
+    }).catch(function(err) {
+        console.error('Failed to copy code: ', err);
+        button.textContent = 'Failed';
+        setTimeout(function() {
+            button.textContent = 'Copy';
+        }, 2000);
+    });
+}
+
+// Lightbox functionality
+function openLightbox(img) {
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const caption = document.querySelector('.lightbox-caption');
+    
+    lightbox.classList.add('show');
+    lightboxImg.src = img.src;
+    caption.textContent = img.alt;
+    
+    // Prevent body scroll when lightbox is open
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    lightbox.classList.remove('show');
+    
+    // Restore body scroll
+    document.body.style.overflow = 'auto';
+}
+
+// Close lightbox with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeLightbox();
+    }
+});
+
+// Toggle code snippet visibility
+function toggleCodeSnippet(header) {
+    const codeSnippet = header.closest('.code-snippet');
+    const codeContent = codeSnippet.querySelector('.code-content');
+    const toggle = header.querySelector('.code-toggle');
+    const icon = toggle.querySelector('i');
+    
+    if (codeContent.style.display === 'none') {
+        // Show code
+        codeContent.style.display = 'block';
+        codeSnippet.classList.add('expanded');
+        
+        // Trigger syntax highlighting for newly visible code
+        if (window.Prism) {
+            Prism.highlightAllUnder(codeContent);
+        }
+    } else {
+        // Hide code
+        codeContent.style.display = 'none';
+        codeSnippet.classList.remove('expanded');
+    }
+}
