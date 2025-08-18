@@ -23,9 +23,30 @@ window.addEventListener('scroll', function() {
     }
 });
 
-//document.querySelector('.mobile-menu').addEventListener('click', function() {
-//    console.log('Mobile menu clicked - implement mobile nav toggle');
-//});
+// Mobile menu toggle functionality
+const mobileMenu = document.querySelector('.mobile-menu');
+const navLinks = document.querySelector('.nav-links');
+
+mobileMenu.addEventListener('click', function() {
+    navLinks.classList.toggle('active');
+    mobileMenu.classList.toggle('active');
+});
+
+// Close mobile menu when clicking on a link
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', function() {
+        navLinks.classList.remove('active');
+        mobileMenu.classList.remove('active');
+    });
+});
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(event) {
+    if (!mobileMenu.contains(event.target) && !navLinks.contains(event.target)) {
+        navLinks.classList.remove('active');
+        mobileMenu.classList.remove('active');
+    }
+});
 
 const observerOptions = {
     threshold: 0.1,
