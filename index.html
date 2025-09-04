@@ -179,9 +179,6 @@
                         Modern graphical interface made with my own rendering framework based on D3D paired with my own GUI framework.
                         Made to reverse engineer automotive ECUs and develop custom solutions for aftermarket automotive manufacturers.
                     </p>
-                        <div class="project-links">
-                            <a href="#" class="project-link">View Details</a>
-                        </div>
                     </div>
                 </div>
 
@@ -238,9 +235,6 @@
                         This was a fun, quick project that allowed me to learn more about encryption and test what I know.
                         I was able to trace the encryption routine and learn how it works using IDA Pro, enabling me to un-encrypt protected data within the game.
                     </p>
-                        <div class="project-links">
-                            <a href="#" class="project-link">View Details</a>
-                        </div>
                     </div>
                 </div>
 
@@ -271,11 +265,38 @@
                         the app transforms complex raw data into actionable insights, 
                         allowing users to improve vehicle performance and efficiency.
                     </p>
-                        <div class="project-links">
-                            <a href="#" class="project-link">View Details</a>
-                        </div>
                     </div>
                 </div>
+
+                <div class="project-card" onclick="toggleProjectCard(this)">
+                    <div class="project-card-header">
+                        <div class="project-card-title">
+                            <div class="project-card-title-v">
+                                <h3>Reverse Engineering Encrypted ECU Files</h3>
+                                <div class="project-tags">
+                                    <span class="tag">RE</span>
+                                    <span class="tag">Security</span>
+                                    <span class="tag">Binary</span>
+                                </div>
+                            </div>
+                            <div class="project-card-arrow">
+                                <i class="fas fa-chevron-down project-card-arrow"></i>
+                            </div>
+                        </div>
+                    </di
+                    <div class="project-content">
+                        <div class="project-content-images">
+                            <img src="imgs/hplReverse.png" alt="Wolf Racing Datalog Analyzer" onclick="openLightbox(this)">
+                        </div>
+                        <p class="project-description">
+                           For this project, I focused on reverse engineering HPTuners log files, which are stored in a
+                           proprietary, encrypted format. By analyzing the file structure and disassembling the decryption
+                           methods used in their own programs, I was able to successfully break the encryption and extract
+                           the data. This data was later used for another project that has not yet been published.
+                        </p>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
@@ -327,7 +348,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer>
         <div class="container">
             <div class="social-links">
@@ -339,19 +359,16 @@
         </div>
     </footer>
 
-    <!-- Lightbox Modal -->
     <div id="lightbox" class="lightbox" onclick="closeLightbox()">
         <span class="lightbox-close">&times;</span>
         <img id="lightbox-img" class="lightbox-content" onclick="event.stopPropagation()">
         <div class="lightbox-caption"></div>
     </div>
 
-    <!-- Syntax Highlighting -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
     
-    <!-- Custom JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
