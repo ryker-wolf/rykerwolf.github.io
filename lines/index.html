@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fitting Factory</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="toolbar">
+      <div class="toolbar-brand">
+        <img class="toolbar-logo" src="./media/FF4_White.png" alt="Fitting Factory" />
+      </div>
+      <button id="openFileButton" class="file-button" type="button">Open STL</button>
+      <input id="stlInput" type="file" accept=".stl" />
+      <button id="resetViewButton" type="button">Reset View</button>
+      <button id="clearMeasureButton" type="button">Clear Line</button>
+      <span id="statusText" class="status">No file loaded</span>
+    </header>
+
+    <main>
+      <aside class="objects-panel">
+        <div class="objects-header">
+          <h2>Objects</h2>
+          <div class="objects-actions">
+            <button id="newLineButton" type="button">+ New Line</button>
+            <button id="addFittingButton" type="button">+ Fitting</button>
+          </div>
+        </div>
+        <div id="lineList" class="line-list"></div>
+        <div class="objects-subheader">Fittings</div>
+        <div id="fittingList" class="line-list"></div>
+      </aside>
+      <section class="viewer-wrap">
+        <section id="dropZone" class="drop-zone">
+          <p>Drag and drop an STL file here, or click "Open STL".</p>
+        </section>
+        <div id="viewer"></div>
+        <div id="measurementLabel" class="measurement-label hidden"></div>
+      </section>
+    </main>
+    <div id="contextMenu" class="context-menu hidden">
+      <button id="contextNewLine" type="button">New Line</button>
+      <button id="contextDeleteLine" type="button">Delete Selected Line</button>
+    </div>
+    <div id="lineTypePanel" class="line-type-panel hidden">
+      <div class="line-type-card">
+        <h3>New Line</h3>
+        <p>Select hose type:</p>
+        <div id="lineTypeOptions" class="line-type-options"></div>
+        <div class="line-type-actions">
+          <button id="lineTypeCancel" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

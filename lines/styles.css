@@ -1,0 +1,348 @@
+:root {
+  color-scheme: light;
+  --bg: #aaaaaa;
+  --surface: #ffffff;
+  --surface-2: #fafafa;
+  --ink: #0a0a0a;
+  --muted: #5c5c5c;
+  --line: #cfcfcf;
+  --line-strong: #0a0a0a;
+  --toolbar-bg: #000000;
+  --toolbar-fg: #ffffff;
+  --accent-active-bg: #000000;
+  --accent-active-fg: #ffffff;
+  --danger: #000000;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line-strong);
+  background: var(--toolbar-bg);
+  color: var(--toolbar-fg);
+}
+
+.toolbar-brand {
+  display: flex;
+  align-items: center;
+  margin-right: 4px;
+}
+
+.toolbar-logo {
+  display: block;
+  height: 34px;
+  width: auto;
+  object-fit: contain;
+}
+
+.toolbar button,
+.file-button,
+#resetViewButton,
+#clearMeasureButton {
+  border: 1px solid #ffffff;
+  background: #000000;
+  color: #ffffff;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.toolbar button:hover,
+.file-button:hover,
+#resetViewButton:hover,
+#clearMeasureButton:hover {
+  background: #1a1a1a;
+}
+
+#stlInput {
+  max-width: 220px;
+  color: #e5e5e5;
+  font-size: 0.85rem;
+}
+
+#stlInput::file-selector-button {
+  border: 1px solid #ffffff;
+  background: #000000;
+  color: #ffffff;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+#stlInput::file-selector-button:hover {
+  background: #1a1a1a;
+}
+
+.status {
+  margin-left: auto;
+  color: #d4d4d4;
+  font-size: 0.875rem;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.objects-panel {
+  width: 260px;
+  border-right: 1px solid var(--line);
+  background: var(--surface);
+  padding: 12px;
+  overflow: auto;
+}
+
+.objects-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.objects-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.objects-header h2 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+#newLineButton,
+#addFittingButton {
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+#newLineButton:hover,
+#addFittingButton:hover {
+  background: var(--surface-2);
+}
+
+.line-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.line-item {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 8px 10px;
+  background: var(--surface-2);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 0.84rem;
+  text-align: left;
+}
+
+.line-item.active {
+  border-color: var(--line-strong);
+  background: var(--accent-active-bg);
+  color: var(--accent-active-fg);
+}
+
+.objects-subheader {
+  margin-top: 12px;
+  margin-bottom: 8px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+.viewer-wrap {
+  position: relative;
+  flex: 1;
+  background: var(--bg);
+}
+
+#viewer {
+  width: 100%;
+  height: 100%;
+}
+
+.drop-zone {
+  position: absolute;
+  inset: 14px;
+  border: 2px dashed var(--line);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: var(--muted);
+  pointer-events: none;
+  opacity: 0.85;
+  transition: opacity 0.15s ease, border-color 0.15s ease;
+}
+
+.drop-zone.dragging {
+  opacity: 1;
+  border-color: var(--line-strong);
+}
+
+.drop-zone.hidden {
+  display: none;
+}
+
+.measurement-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -100%);
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.78rem;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.measurement-label.hidden {
+  display: none;
+}
+
+.context-menu {
+  position: fixed;
+  z-index: 30;
+  min-width: 180px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.context-menu button {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  border-radius: 4px;
+  padding: 7px 9px;
+  cursor: pointer;
+}
+
+.context-menu button:hover {
+  background: var(--surface-2);
+  border-color: var(--line);
+}
+
+.context-menu button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.context-menu.hidden {
+  display: none;
+}
+
+.line-type-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(0, 0, 0, 0.45);
+  display: grid;
+  place-items: center;
+}
+
+.line-type-panel.hidden {
+  display: none;
+}
+
+.line-type-card {
+  width: min(460px, 92vw);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.line-type-card h3 {
+  margin: 0 0 6px 0;
+  font-size: 1.05rem;
+}
+
+.line-type-card p {
+  margin: 0 0 12px 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.line-type-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.line-type-option {
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 10px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.line-type-option:hover {
+  border-color: var(--line-strong);
+  background: var(--surface);
+}
+
+.line-type-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+#lineTypeCancel {
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: 4px;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+
+#lineTypeCancel:hover {
+  background: var(--surface-2);
+}
