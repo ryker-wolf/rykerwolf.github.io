@@ -1,97 +1,53 @@
 import * as THREE from "https://esm.sh/three@0.164.1";
-import { OrbitControls } from "https://esm.sh/three@0.164.1/examples/jsm/controls/OrbitControls.js";
 import { STLLoader } from "https://esm.sh/three@0.164.1/examples/jsm/loaders/STLLoader.js";
+import {
+  viewerElement,
+  inputElement,
+  openFileButton,
+  resetViewButton,
+  clearMeasureButton,
+  newLineButton,
+  addFittingButton,
+  lineListElement,
+  fittingListElement,
+  contextMenu,
+  contextNewLineButton,
+  contextDeleteLineButton,
+  lineTypePanel,
+  lineTypeOptions,
+  lineTypeCancelButton,
+  dropZone,
+  statusText,
+  measurementLabel
+} from "./src/ui/elements.js";
+import {
+  HOSE_OPTIONS,
+  HOSE_RADIAL_SEGMENTS,
+  HOSE_BRAID_PITCH,
+  FITTING_MODEL_PATH,
+  FITTING_MM_TO_IN,
+  FITTING_SNAP_DISTANCE,
+  FITTING_EXIT_OFFSET_HOSE_RADIUS_MULT,
+  FITTING_EXIT_MIN_OFFSET,
+  IMPORT_STL_SCALE,
+  ROUTE_MESH_BLOCK_CHECK_ENABLED
+} from "./src/config/constants.js";
+import { createSceneContext } from "./src/scene/setup.js";
+import { circleIconTexture, xIconTexture, braidedHoseTexture } from "./src/rendering/textures.js";
 
-const viewerElement = document.getElementById("viewer");
-const inputElement = document.getElementById("stlInput");
-const openFileButton = document.getElementById("openFileButton");
-const resetViewButton = document.getElementById("resetViewButton");
-const clearMeasureButton = document.getElementById("clearMeasureButton");
-const newLineButton = document.getElementById("newLineButton");
-const addFittingButton = document.getElementById("addFittingButton");
-const lineListElement = document.getElementById("lineList");
-const fittingListElement = document.getElementById("fittingList");
-const contextMenu = document.getElementById("contextMenu");
-const contextNewLineButton = document.getElementById("contextNewLine");
-const contextDeleteLineButton = document.getElementById("contextDeleteLine");
-const lineTypePanel = document.getElementById("lineTypePanel");
-const lineTypeOptions = document.getElementById("lineTypeOptions");
-const lineTypeCancelButton = document.getElementById("lineTypeCancel");
-const dropZone = document.getElementById("dropZone");
-const statusText = document.getElementById("statusText");
-const measurementLabel = document.getElementById("measurementLabel");
-
-if (
-  !viewerElement ||
-  !inputElement ||
-  !resetViewButton ||
-  !clearMeasureButton ||
-  !newLineButton ||
-  !addFittingButton ||
-  !lineListElement ||
-  !fittingListElement ||
-  !contextMenu ||
-  !contextNewLineButton ||
-  !contextDeleteLineButton ||
-  !lineTypePanel ||
-  !lineTypeOptions ||
-  !lineTypeCancelButton ||
-  !dropZone ||
-  !statusText ||
-  !measurementLabel
-) {
-  throw new Error("Missing required UI elements.");
-}
-
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xe8e8e8);
-
-const camera = new THREE.PerspectiveCamera(
-  60,
-  viewerElement.clientWidth / viewerElement.clientHeight,
-  0.1,
-  5000
-);
-camera.position.set(180, 140, 180);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(viewerElement.clientWidth, viewerElement.clientHeight);
-viewerElement.appendChild(renderer.domElement);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.mouseButtons.LEFT = THREE.MOUSE.ROTATE;
-controls.mouseButtons.MIDDLE = THREE.MOUSE.PAN;
-controls.mouseButtons.RIGHT = null;
-// Many STL exports are Z-up; rotate to this viewer's Y-up world by default.
-const defaultImportRotation = new THREE.Euler(-Math.PI / 2, 0, 0);
-const pickRaycaster = new THREE.Raycaster();
-const probeRaycaster = new THREE.Raycaster();
-const pointer = new THREE.Vector2();
-const insideTestDirections = [
-  new THREE.Vector3(1, 0.173, 0.297).normalize(),
-  new THREE.Vector3(-0.211, 1, 0.389).normalize(),
-  new THREE.Vector3(0.143, -0.277, 1).normalize()
-];
-
-const ambient = new THREE.AmbientLight(0xffffff, 0.5);
-scene.add(ambient);
-const directional = new THREE.DirectionalLight(0xffffff, 1.1);
-directional.position.set(100, 200, 150);
-scene.add(directional);
-const routeGroup = new THREE.Group();
-scene.add(routeGroup);
-const fittingGroup = new THREE.Group();
-scene.add(fittingGroup);
-const hoseRadialSegments = 12;
-const hoseBraidPitch = 2.5;
-const HOSE_OPTIONS = [
-  { id: "6an", name: "6AN Braided", od: 0.56, minBendRadius: 0, hoseRadius: 0.30 },
-  { id: "8an", name: "8AN Braided", od: 0.69, minBendRadius: 3.5, hoseRadius: 1.35 },
-  { id: "10an", name: "10AN Braided", od: 0.88, minBendRadius: 4.5, hoseRadius: 1.65 }
-];
+const {
+  scene,
+  camera,
+  renderer,
+  controls,
+  defaultImportRotation,
+  pickRaycaster,
+  probeRaycaster,
+  pointer,
+  insideTestDirections,
+  routeGroup,
+  fittingGroup
+} = createSceneContext(viewerElement);
 
 const loader = new STLLoader();
 let currentMesh = null;
@@ -131,14 +87,8 @@ let isDraggingFitting = false;
 let draggedFittingId = null;
 const fittingDragPlane = new THREE.Plane();
 const fittingDragIntersection = new THREE.Vector3();
-const fittingModelPath = "./models/6AN_QD_Straight.stl";
-const FITTING_MM_TO_IN = 1 / 25.4;
-const FITTING_SNAP_DISTANCE = 1.2;
-const FITTING_EXIT_OFFSET_HOSE_RADIUS_MULT = 1;
-const FITTING_EXIT_MIN_OFFSET = 0.06;
+const fittingModelPath = FITTING_MODEL_PATH;
 const fittingPortOutwardScratch = new THREE.Vector3();
-/** Uniform scale applied to the main imported STL (after centering). 0.5 = half size. */
-const IMPORT_STL_SCALE = 0.3937007874015748;
 let fittingTemplateGeometry = null;
 let isRotatingFitting = false;
 let rotatingFittingId = null;
@@ -146,77 +96,6 @@ let rotateStartX = 0;
 let rotateStartY = 0;
 let rotateMoved = false;
 let suppressContextMenuOnce = false;
-
-pickRaycaster.params.Line.threshold = 4;
-
-function createIconTexture(drawIcon) {
-  const size = 64;
-  const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
-  const context = canvas.getContext("2d");
-  if (!context) {
-    throw new Error("Could not create marker icon context.");
-  }
-
-  drawIcon(context, size);
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.needsUpdate = true;
-  return texture;
-}
-
-const circleIconTexture = createIconTexture((ctx, size) => {
-  const center = size / 2;
-  const radius = size * 0.16;
-  ctx.clearRect(0, 0, size, size);
-  ctx.fillStyle = "#ffffff";
-  ctx.beginPath();
-  ctx.arc(center, center, radius, 0, Math.PI * 2);
-  ctx.fill();
-});
-
-const xIconTexture = createIconTexture((ctx, size) => {
-  const pad = size * 0.36;
-  ctx.clearRect(0, 0, size, size);
-  ctx.strokeStyle = "#ffffff";
-  ctx.lineWidth = size * 0.045;
-  ctx.lineCap = "round";
-  ctx.beginPath();
-  ctx.moveTo(pad, pad);
-  ctx.lineTo(size - pad, size - pad);
-  ctx.moveTo(size - pad, pad);
-  ctx.lineTo(pad, size - pad);
-  ctx.stroke();
-});
-
-const braidedHoseTexture = createIconTexture((ctx, size) => {
-  const width = size;
-  const height = size;
-  ctx.clearRect(0, 0, width, height);
-  ctx.fillStyle = "#1e1f21";
-  ctx.fillRect(0, 0, width, height);
-
-  ctx.lineWidth = 2;
-  ctx.globalAlpha = 0.9;
-  for (let i = -height; i < width + height; i += 8) {
-    ctx.strokeStyle = "#9ca3af";
-    ctx.beginPath();
-    ctx.moveTo(i, 0);
-    ctx.lineTo(i + height, height);
-    ctx.stroke();
-  }
-  for (let i = -height; i < width + height; i += 8) {
-    ctx.strokeStyle = "#4b5563";
-    ctx.beginPath();
-    ctx.moveTo(i, height);
-    ctx.lineTo(i + height, 0);
-    ctx.stroke();
-  }
-  ctx.globalAlpha = 1;
-});
-braidedHoseTexture.wrapS = THREE.RepeatWrapping;
-braidedHoseTexture.wrapT = THREE.RepeatWrapping;
-braidedHoseTexture.anisotropy = 8;
 
 function createRouteTubeMesh(controlPoints, routePoints, color, hoseRadius, opacity = 1) {
   if (controlPoints.length < 2 || routePoints.length < 2) return null;
@@ -226,19 +105,19 @@ function createRouteTubeMesh(controlPoints, routePoints, color, hoseRadius, opac
       : new THREE.CatmullRomCurve3(controlPoints, false, "centripetal", 0.5);
 
   const tubularSegments = Math.max(40, routePoints.length - 1);
-  const geometry = new THREE.TubeGeometry(curve, tubularSegments, hoseRadius, hoseRadialSegments, false);
+  const geometry = new THREE.TubeGeometry(curve, tubularSegments, hoseRadius, HOSE_RADIAL_SEGMENTS, false);
   const texture = braidedHoseTexture.clone();
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
   const routeLength = computePathLength(routePoints);
-  texture.repeat.set(Math.max(routeLength / hoseBraidPitch, 1), 1);
+  texture.repeat.set(Math.max(routeLength / HOSE_BRAID_PITCH, 1), 1);
   texture.needsUpdate = true;
 
   const material = new THREE.MeshStandardMaterial({
     map: texture,
     color,
     roughness: 0.55,
-    metalness: 0.38,
+    metalness: 0.18,
     transparent: opacity < 1,
     opacity
   });
@@ -253,7 +132,13 @@ function createRouteGlowMesh(controlPoints, routePoints, color, hoseRadius) {
       ? new THREE.LineCurve3(controlPoints[0].clone(), controlPoints[1].clone())
       : new THREE.CatmullRomCurve3(controlPoints, false, "centripetal", 0.5);
   const tubularSegments = Math.max(40, routePoints.length - 1);
-  const geometry = new THREE.TubeGeometry(curve, tubularSegments, hoseRadius * 1.45, hoseRadialSegments, false);
+  const geometry = new THREE.TubeGeometry(
+    curve,
+    tubularSegments,
+    hoseRadius * 1.45,
+    HOSE_RADIAL_SEGMENTS,
+    false
+  );
   const material = new THREE.MeshBasicMaterial({
     color,
     transparent: true,
@@ -610,7 +495,7 @@ function rebuildInactiveRouteLines() {
       routePoints,
       route.blocked ? 0xef4444 : 0x9ca3af,
       route.hoseRadius,
-      0.45
+      0.90
     );
     if (!mesh) continue;
     mesh.userData = { routeId: route.id };
@@ -1278,7 +1163,9 @@ function findRouteBlockPoint(routePoints, mesh) {
 }
 
 function updateRouteMeasurement(options = {}) {
-  const runBlockedCheck = options.runBlockedCheck ?? true;
+  const deferBlockedCheck = options.runBlockedCheck === false;
+  const computeBlocked = ROUTE_MESH_BLOCK_CHECK_ENABLED && !deferBlockedCheck;
+  const showBlockResult = ROUTE_MESH_BLOCK_CHECK_ENABLED ? !deferBlockedCheck : true;
 
   if (getActiveRoute() && startPoint && endPoint) {
     syncLockedExitBendWorldPositionsEditorFromFittings();
@@ -1302,9 +1189,13 @@ function updateRouteMeasurement(options = {}) {
   const minBendRadius = activeRoute?.minBendRadius ?? HOSE_OPTIONS[0].minBendRadius;
   const bendCheck = routeRespectsMinBendRadius(controlPoints, minBendRadius);
 
-  if (runBlockedCheck) {
+  if (computeBlocked) {
     routeBlockPoint = currentMesh ? findRouteBlockPoint(routePoints, currentMesh) : null;
     isRouteBlocked = !!routeBlockPoint;
+    pendingBlockedCheck = false;
+  } else if (!ROUTE_MESH_BLOCK_CHECK_ENABLED) {
+    routeBlockPoint = null;
+    isRouteBlocked = false;
     pendingBlockedCheck = false;
   } else {
     pendingBlockedCheck = true;
@@ -1314,7 +1205,7 @@ function updateRouteMeasurement(options = {}) {
   measurementLine = createRouteTubeMesh(
     controlPoints,
     routePoints,
-    runBlockedCheck ? (isRouteBlocked ? 0xef4444 : 0x22c55e) : 0xf59e0b,
+    showBlockResult ? (isRouteBlocked ? 0xef4444 : 0x22c55e) : 0xf59e0b,
     getActiveRoute()?.hoseRadius ?? HOSE_OPTIONS[0].hoseRadius
   );
   if (!measurementLine) return;
@@ -1323,7 +1214,7 @@ function updateRouteMeasurement(options = {}) {
   measurementGlow = createRouteGlowMesh(
     controlPoints,
     routePoints,
-    runBlockedCheck ? (isRouteBlocked ? 0xf87171 : 0x86efac) : 0xfde68a,
+    showBlockResult ? (isRouteBlocked ? 0xf87171 : 0x4e68fc) : 0xfde68a,
     getActiveRoute()?.hoseRadius ?? HOSE_OPTIONS[0].hoseRadius
   );
   if (measurementGlow) {
@@ -1335,17 +1226,20 @@ function updateRouteMeasurement(options = {}) {
   measurementDistance = computePathLength(routePoints);
   const midpointIndex = Math.floor(routePoints.length / 2);
   measurementMidpoint.copy(routePoints[midpointIndex]);
-  measurementLabel.textContent = runBlockedCheck
-    ? `${measurementDistance.toFixed(2)}in • ${isRouteBlocked ? "blocked" : "clear"}`
+  measurementLabel.textContent = showBlockResult
+    ? `${measurementDistance.toFixed(2)}in • ${isRouteBlocked ? "blocked" : "clear"}${
+        ROUTE_MESH_BLOCK_CHECK_ENABLED ? "" : " (no hit test)"
+      }`
     : `${measurementDistance.toFixed(2)}in • checking...`;
   showMeasurement = true;
-  if (runBlockedCheck) {
+  if (showBlockResult) {
+    const hitNote = ROUTE_MESH_BLOCK_CHECK_ENABLED ? "" : " | Mesh hit test off";
     setStatus(
       `Distance: ${measurementDistance.toFixed(3)} units | Route ${
         isRouteBlocked ? "blocked" : "clear"
       } | Bends: ${bendPoints.length} | MinR: ${
         Number.isFinite(bendCheck.minRadius) ? bendCheck.minRadius.toFixed(2) : "n/a"
-      } / ${minBendRadius.toFixed(2)}.`
+      } / ${minBendRadius.toFixed(2)}.${hitNote}`
     );
   } else {
     setStatus(
@@ -1353,7 +1247,7 @@ function updateRouteMeasurement(options = {}) {
     );
   }
   persistActiveRoute();
-  if (runBlockedCheck) {
+  if (showBlockResult) {
     refreshLineList();
   }
 }
