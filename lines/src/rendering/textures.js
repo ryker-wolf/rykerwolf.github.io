@@ -1,4 +1,22 @@
 import * as THREE from "https://esm.sh/three@0.164.1";
+import { HOSE_TEXTURE_MAX_DIMENSION, HOSE_TEXTURE_ANISOTROPY } from "../config/constants.js";
+
+function downscaleTextureImage(texture, maxDimension) {
+  const img = texture.image;
+  if (!img || !(img.width > 0) || !(img.height > 0)) return;
+  const max = Math.max(img.width, img.height);
+  if (max <= maxDimension) return;
+  const scale = maxDimension / max;
+  const w = Math.max(1, Math.floor(img.width * scale));
+  const h = Math.max(1, Math.floor(img.height * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+  ctx.drawImage(img, 0, 0, w, h);
+  texture.image = canvas;
+}
 
 function createIconTexture(drawIcon) {
   const size = 64;
@@ -40,33 +58,15 @@ const xIconTexture = createIconTexture((ctx, size) => {
   ctx.stroke();
 });
 
-const braidedHoseTexture = createIconTexture((ctx, size) => {
-  const width = size;
-  const height = size;
-  ctx.clearRect(0, 0, width, height);
-  ctx.fillStyle = "#1e1f21";
-  ctx.fillRect(0, 0, width, height);
-
-  ctx.lineWidth = 1;
-  ctx.globalAlpha = 1;
-  for (let i = -height; i < width + height; i += 8) {
-    ctx.strokeStyle = "#3a3b3d";
-    ctx.beginPath();
-    ctx.moveTo(i, 0);
-    ctx.lineTo(i + height, height);
-    ctx.stroke();
-  }
-  for (let i = -height; i < width + height; i += 8) {
-    ctx.strokeStyle = "#3a3b3d";
-    ctx.beginPath();
-    ctx.moveTo(i, height);
-    ctx.lineTo(i + height, 0);
-    ctx.stroke();
-  }
-  ctx.globalAlpha = 1;
+const textureLoader = new THREE.TextureLoader();
+const braidedHoseTexture = textureLoader.load("./textures/braided_nylon.jpg", (tex) => {
+  downscaleTextureImage(tex, HOSE_TEXTURE_MAX_DIMENSION);
+  tex.needsUpdate = true;
 });
 braidedHoseTexture.wrapS = THREE.RepeatWrapping;
 braidedHoseTexture.wrapT = THREE.RepeatWrapping;
-braidedHoseTexture.anisotropy = 8;
+braidedHoseTexture.repeat.set(1, 1);
+braidedHoseTexture.anisotropy = HOSE_TEXTURE_ANISOTROPY;
+braidedHoseTexture.colorSpace = THREE.SRGBColorSpace;
 
 export { circleIconTexture, xIconTexture, braidedHoseTexture };

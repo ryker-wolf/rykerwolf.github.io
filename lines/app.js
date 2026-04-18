@@ -89,6 +89,10 @@ const fittingDragPlane = new THREE.Plane();
 const fittingDragIntersection = new THREE.Vector3();
 const fittingModelPath = FITTING_MODEL_PATH;
 const fittingPortOutwardScratch = new THREE.Vector3();
+const fittingAimOutwardScratch = new THREE.Vector3();
+const fittingAimDesiredDir = new THREE.Vector3();
+const fittingAimAxis = new THREE.Vector3();
+const fittingAimQuat = new THREE.Quaternion();
 let fittingTemplateGeometry = null;
 let isRotatingFitting = false;
 let rotatingFittingId = null;
@@ -96,6 +100,15 @@ let rotateStartX = 0;
 let rotateStartY = 0;
 let rotateMoved = false;
 let suppressContextMenuOnce = false;
+
+function applyHoseTextureURepeat(geometry, uRepeat) {
+  const uv = geometry.getAttribute("uv");
+  if (!uv || uRepeat === 1) return;
+  for (let i = 0; i < uv.count; i += 1) {
+    uv.setX(i, uv.getX(i) * uRepeat);
+  }
+  uv.needsUpdate = true;
+}
 
 function createRouteTubeMesh(controlPoints, routePoints, color, hoseRadius, opacity = 1) {
   if (controlPoints.length < 2 || routePoints.length < 2) return null;
@@ -106,17 +119,14 @@ function createRouteTubeMesh(controlPoints, routePoints, color, hoseRadius, opac
 
   const tubularSegments = Math.max(40, routePoints.length - 1);
   const geometry = new THREE.TubeGeometry(curve, tubularSegments, hoseRadius, HOSE_RADIAL_SEGMENTS, false);
-  const texture = braidedHoseTexture.clone();
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.RepeatWrapping;
   const routeLength = computePathLength(routePoints);
-  texture.repeat.set(Math.max(routeLength / HOSE_BRAID_PITCH, 1), 1);
-  texture.needsUpdate = true;
+  const uRepeat = Math.max(routeLength / HOSE_BRAID_PITCH, 1);
+  applyHoseTextureURepeat(geometry, uRepeat);
 
   const material = new THREE.MeshStandardMaterial({
-    map: texture,
+    map: braidedHoseTexture,
     color,
-    roughness: 0.55,
+    roughness: 0.45,
     metalness: 0.18,
     transparent: opacity < 1,
     opacity
@@ -257,7 +267,7 @@ function refreshLineList() {
     const item = document.createElement("button");
     item.type = "button";
     item.className = `line-item${route.id === activeRouteId ? " active" : ""}`;
-    const suffix = route.startPoint && route.endPoint ? ` (${route.distance.toFixed(2)}u)` : "";
+    const suffix = route.startPoint && route.endPoint ? ` (${route.distance.toFixed(2)}in)` : "";
     item.textContent = `${route.name} • ${route.hoseLabel}${suffix}`;
     item.addEventListener("click", () => activateRoute(route.id));
     lineListElement.appendChild(item);
@@ -301,6 +311,15 @@ function getFittingById(fittingId) {
   return fittings.find((fitting) => fitting.id === fittingId) ?? null;
 }
 
+/** Hose port index when this fitting is attached to the active route; otherwise 0. */
+function getPrimaryHoseConnectorIndexForFitting(fitting) {
+  if (!fitting) return 0;
+  const route = getActiveRoute();
+  if (route?.startAttachment?.fittingId === fitting.id) return route.startAttachment.connectorIndex;
+  if (route?.endAttachment?.fittingId === fitting.id) return route.endAttachment.connectorIndex;
+  return 0;
+}
+
 function getFittingConnectorWorldPosition(fitting, connectorIndex) {
   if (!fitting) return null;
   const local = fitting.connectorsLocal[connectorIndex];
@@ -311,15 +330,30 @@ function getOppositeConnectorIndex(connectorIndex) {
   return connectorIndex === 0 ? 1 : 0;
 }
 
-/** Unit vector from port along the hose barb axis, pointing out of the fitting (away from the body). */
+/**
+ * Unit vector along the hose barb axis from the hose port (connectorIndex) toward the body reference
+ * (local connector 2 from buildFittingConnectorsFromGeometry). Connectors 0 and 1 are often the same
+ * point in this app, so c0→c1 is degenerate; index 2 defines the real axis (same as route exit math).
+ */
 function getFittingPortOutwardWorldDirection(fitting, connectorIndex, target) {
+  if (!fitting || !target) return null;
+  const connector = getFittingConnectorWorldPosition(fitting, connectorIndex);
+  const axisRef = getFittingConnectorWorldPosition(fitting, 2);
+  if (connector && axisRef && connectorIndex !== 2) {
+    target.subVectors(axisRef, connector);
+    if (target.lengthSq() > 1e-10) return target.normalize();
+  }
   const c0 = getFittingConnectorWorldPosition(fitting, 0);
   const c1 = getFittingConnectorWorldPosition(fitting, 1);
   if (!c0 || !c1) return null;
   if (connectorIndex === 0) {
-    return target.copy(c0).sub(c1).normalize();
+    target.subVectors(c0, c1);
+    if (target.lengthSq() > 1e-10) return target.normalize();
+  } else {
+    target.subVectors(c1, c0);
+    if (target.lengthSq() > 1e-10) return target.normalize();
   }
-  return target.copy(c1).sub(c0).normalize();
+  return null;
 }
 
 function computeFittingRouteExitPointWorld(fitting, connectorIndex, hoseRadius) {
@@ -495,7 +529,7 @@ function rebuildInactiveRouteLines() {
       routePoints,
       route.blocked ? 0xef4444 : 0x9ca3af,
       route.hoseRadius,
-      0.90
+      1
     );
     if (!mesh) continue;
     mesh.userData = { routeId: route.id };
@@ -1330,6 +1364,158 @@ function pickPointOnModel(event) {
   pickRaycaster.near = 0;
   pickRaycaster.far = Infinity;
 
+  const ctrlAimFitting =
+    (event.ctrlKey || event.metaKey) &&
+    selectedFittingId &&
+    !lineTypePanelOpen &&
+    !contextMenuOpen;
+  if (ctrlAimFitting) {
+    const fitting = getFittingById(selectedFittingId);
+    if (!fitting) {
+      clearFittingSelection();
+      return;
+    }
+    const candidates = [];
+    if (currentMesh) candidates.push(currentMesh);
+    for (const child of fittingGroup.children) {
+      candidates.push(child);
+    }
+    const hits = candidates.length > 0 ? pickRaycaster.intersectObjects(candidates, true) : [];
+    if (hits.length === 0) {
+      setStatus("Ctrl+click a surface to aim the fitting toward that point.");
+      return;
+    }
+    const pickPoint = hits[0].point;
+    const hoseConn = getPrimaryHoseConnectorIndexForFitting(fitting);
+    const connector = getFittingConnectorWorldPosition(fitting, hoseConn);
+    if (!connector) {
+      setStatus("Fitting connector not available.");
+      return;
+    }
+    fittingAimDesiredDir.subVectors(pickPoint, connector);
+    if (fittingAimDesiredDir.lengthSq() < 1e-10) {
+      setStatus("Pick a point farther from the connector.");
+      return;
+    }
+    fittingAimDesiredDir.normalize();
+    fittingAimDesiredDir.negate();
+
+    const outward = getFittingPortOutwardWorldDirection(fitting, hoseConn, fittingAimOutwardScratch);
+    if (!outward || outward.lengthSq() < 1e-10) {
+      setStatus("Could not compute fitting hose axis.");
+      return;
+    }
+
+    const dot = THREE.MathUtils.clamp(outward.dot(fittingAimDesiredDir), -1, 1);
+    if (dot > 1 - 1e-5) {
+      setStatus(`${fitting.name} is already aimed at that point.`);
+      return;
+    }
+
+    if (dot < -1 + 1e-5) {
+      fittingAimAxis.crossVectors(outward, new THREE.Vector3(0, 1, 0));
+      if (fittingAimAxis.lengthSq() < 1e-8) {
+        fittingAimAxis.crossVectors(outward, new THREE.Vector3(1, 0, 0));
+      }
+      fittingAimAxis.normalize();
+      fitting.mesh.rotateOnWorldAxis(fittingAimAxis, Math.PI);
+    } else {
+      fittingAimQuat.setFromUnitVectors(outward, fittingAimDesiredDir);
+      fitting.mesh.quaternion.premultiply(fittingAimQuat);
+    }
+
+    updateAttachedRouteEndpoints();
+    persistActiveRoute();
+    if (activeRouteId) {
+      loadRouteIntoEditor(getActiveRoute());
+    } else {
+      rebuildInactiveRouteLines();
+    }
+    refreshLineList();
+    setStatus(`${fitting.name} rotated toward picked point (Ctrl+click).`);
+    event.preventDefault();
+    return;
+  }
+
+  const shiftSnapEndpoint =
+    event.shiftKey &&
+    (selectedPointType === "end" || selectedPointType === "start") &&
+    startPoint &&
+    endPoint &&
+    getActiveRoute() &&
+    currentMesh;
+  if (shiftSnapEndpoint) {
+    const meshHits = pickRaycaster.intersectObject(currentMesh, false);
+    const snapStart = selectedPointType === "start";
+    if (meshHits.length > 0) {
+      pushUndoState();
+      if (snapStart) {
+        startPoint.copy(meshHits[0].point);
+        startAttachment = null;
+      } else {
+        endPoint.copy(meshHits[0].point);
+        endAttachment = null;
+      }
+      ensureAttachmentExitBendsInEditor();
+      const bendLockCheck = canApplyRouteShape(startPoint, endPoint, bendPoints);
+      if (!bendLockCheck.valid) {
+        const minBendRadius = getActiveRoute()?.minBendRadius ?? HOSE_OPTIONS[0].minBendRadius;
+        const snapshot = actionHistory.pop();
+        restoreRouteFromSnapshot(snapshot);
+        setSelectedPoint(snapStart ? "start" : "end", -1);
+        setStatus(
+          `Snap rejected: minimum bend radius is ${minBendRadius.toFixed(2)} (current ${bendLockCheck.minRadius.toFixed(
+            2
+          )}).`
+        );
+        return;
+      }
+      rebuildMarkers();
+      updateRouteMeasurement();
+      setSelectedPoint(snapStart ? "start" : "end", -1);
+      setStatus(`${snapStart ? "Start" : "End"} point snapped to model (Shift+click).`);
+      event.preventDefault();
+      return;
+    }
+    setStatus(
+      snapStart
+        ? "Shift+click the model surface to snap the start point."
+        : "Shift+click the model surface to snap the end point."
+    );
+    return;
+  }
+
+  const shiftSnapFitting =
+    event.shiftKey &&
+    selectedFittingId &&
+    currentMesh &&
+    !lineTypePanelOpen &&
+    !contextMenuOpen;
+  if (shiftSnapFitting) {
+    const fitting = getFittingById(selectedFittingId);
+    if (!fitting) {
+      clearFittingSelection();
+      return;
+    }
+    const meshHits = pickRaycaster.intersectObject(currentMesh, false);
+    if (meshHits.length > 0) {
+      fitting.mesh.position.copy(meshHits[0].point);
+      updateAttachedRouteEndpoints();
+      persistActiveRoute();
+      if (activeRouteId) {
+        loadRouteIntoEditor(getActiveRoute());
+      } else {
+        rebuildInactiveRouteLines();
+      }
+      refreshLineList();
+      setStatus(`${fitting.name} snapped to model (Shift+click).`);
+      event.preventDefault();
+      return;
+    }
+    setStatus("Shift+click the model surface to snap the selected fitting.");
+    return;
+  }
+
   const fittingHits = fittings.length > 0 ? pickRaycaster.intersectObjects(fittingGroup.children, true) : [];
   const connectorHit = fittingHits.find((hit) => hit.object.userData?.type === "fittingConnector");
   if (connectorHit) {
@@ -1439,7 +1625,11 @@ function pickPointOnModel(event) {
     clearFittingSelection();
     setSelectedPoint(markerType, markerType === "bend" ? markerBendIndex : -1);
     rebuildMarkers();
-    setStatus(`Selected ${markerType} point. Press Delete/Backspace to remove.`);
+    setStatus(
+      markerType === "end" || markerType === "start"
+        ? `Selected ${markerType} point. Shift+click the model to snap. Press Delete/Backspace to remove.`
+        : `Selected ${markerType} point. Press Delete/Backspace to remove.`
+    );
     return;
   }
 
